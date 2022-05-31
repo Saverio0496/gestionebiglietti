@@ -28,7 +28,7 @@
         </ul>
       </div>
       <div class="col-md-3 text-end">
-        <a  class="btn btn-primary" href="login.jsp">Login</a>
+        <a  class="btn btn-primary" href="LogoutServlet">Logout</a>
       </div>
     </div>
   </nav>
