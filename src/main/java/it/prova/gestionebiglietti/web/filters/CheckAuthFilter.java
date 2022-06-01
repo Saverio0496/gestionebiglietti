@@ -18,8 +18,7 @@ import it.prova.gestionebiglietti.model.Utente;
 public class CheckAuthFilter implements Filter {
 
 	private static final String HOME_PATH = "";
-	private static final String[] EXCLUDED_URLS = { "/login.jsp", "/LoginServlet", "/LogoutServlet", "/css/", "/js/" };
-	private static final String[] PROTECTED_URLS = { "/admin/" };
+	private static final String[] EXCLUDED_URLS = { "/login.jsp", "/LoginServlet", "/LogoutServlet", "/index.jsp", "/search.jsp", "/show.jsp", "/ExecuteSearchBigliettoServlet", "/PrepareSearchBigliettoServlet", "/css/", "/js/" };
 
 	public CheckAuthFilter() {
 	}
@@ -34,22 +33,20 @@ public class CheckAuthFilter implements Filter {
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
 
+		// prendo il path della request che sta passando in questo momento es.
+		// /LoginServlet
 		String pathAttuale = httpRequest.getServletPath();
 		System.out.println("Invocazione di: " + pathAttuale);
 
+		// vediamo se il path risulta tra quelli 'liberi di passare'
 		boolean isInWhiteList = isPathInWhiteList(pathAttuale);
 
+		// se non lo e' bisogna controllare sia sessione che percorsi protetti
 		if (!isInWhiteList) {
 			Utente utenteInSession = (Utente) httpRequest.getSession().getAttribute("userInfo");
 			// intanto verifico se utente in sessione
 			if (utenteInSession == null) {
-				httpResponse.sendRedirect(httpRequest.getContextPath());
-				return;
-			}
-			// controllo che utente abbia ruolo admin se nel path risulta presente /admin/
-			if (isPathForOnlyAdministrators(pathAttuale)) {
-				httpRequest.setAttribute("messaggio", "Non si è autorizzati alla navigazione richiesta");
-				httpRequest.getRequestDispatcher("/home.jsp").forward(httpRequest, httpResponse);
+				httpResponse.sendRedirect("login.jsp");
 				return;
 			}
 		}
@@ -58,22 +55,14 @@ public class CheckAuthFilter implements Filter {
 	}
 
 	private boolean isPathInWhiteList(String requestPath) {
+		// bisogna controllare che se il path risulta proprio "" oppure se
+		// siamo in presenza un url 'libero'
 		if (requestPath.equals(HOME_PATH))
 			return true;
 
 		for (String urlPatternItem : EXCLUDED_URLS) {
 			if (requestPath.contains(urlPatternItem)) {
 				System.out.println("url invocabile liberamente");
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean isPathForOnlyAdministrators(String requestPath) {
-		for (String urlPatternItem : PROTECTED_URLS) {
-			if (requestPath.contains(urlPatternItem)) {
-				System.out.println("url invocabile solo se sei Admin");
 				return true;
 			}
 		}

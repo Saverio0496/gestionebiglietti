@@ -27,9 +27,16 @@
           </li>
         </ul>
       </div>
-      <div class="col-md-3 text-end">
-        <a  class="btn btn-primary" href="LogoutServlet">Logout</a>
-      </div>
+     <%if(request.getSession().getAttribute("userInfo") == null){%>
+      		<div class="col-md-3 text-end">
+		        <a  class="btn btn-primary" href="login.jsp">Login</a>
+		      </div>
+	     <% }else{ %>
+		     <div class="col-md-3 text-end">
+		        <a  class="btn btn-primary" href="LogoutServlet">Logout</a>
+		      </div>
+	     
+	     <%} %>
     </div>
   </nav>
 
